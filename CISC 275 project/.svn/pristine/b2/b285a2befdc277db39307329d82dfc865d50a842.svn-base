@@ -1,0 +1,129 @@
+package group2.game;
+import java.awt.Color;
+import java.util.Random;
+import java.awt.Image;
+
+/**
+ * Stefan
+ * 4/3/13
+ */
+public abstract class WaterObjects {
+
+	Position position;
+	RapidRunoffGame game;
+	int point_value = 10;
+	Boolean is_alive = true;
+	public int updates = 0;
+	public boolean is_clicked = false;
+	public Color color = null;
+
+	double lower_bin_x;
+	double upper_bin_x;
+	double lower_bin_y;
+	double upper_bin_y;
+	int time_num =0;
+	double shift;
+	Random rand = new Random();
+	int sin_num = (int)rand.nextDouble()*300;
+	
+	double x_velocity = 0;
+	double y_velocity = 0.005;
+	
+	public Image[] image = new Image[3];
+	public int cur_image;
+	
+	public WaterObjects(Position p, RapidRunoffGame g) {
+		this.position = p;
+		this.game = g;
+		this.shift = rand.nextDouble()/(g.screen_height*.0114);
+	}
+	
+	/**
+	 * Ben
+	 * gave objects a more curved path down streams and through river
+	 */
+	public void update() {
+		if(time_num <300)
+			time_num++;
+		else{
+			time_num=0;
+		}
+		updates++;
+		if(position.getYPos() > game.map.river.position.y + 1.0/100 + shift) {
+			x_velocity = 0.0033;
+			y_velocity = 0;
+			
+			if(time_num%20 == 0)
+				if(sin_num <300)
+					sin_num++;
+				else{
+					sin_num=0;
+				}
+				position.setPosition(position.getXPos() , position.getYPos() + 0.0005*Math.sin(sin_num+(300*shift)));
+			
+		}else{
+			x_velocity = 0;
+			y_velocity = 0.005;
+			if(time_num%20 == 0)
+				if(sin_num <300)
+					sin_num++;
+				else{
+					sin_num=0;
+				}
+				position.setPosition(position.getXPos() + 0.0005*Math.sin(sin_num+(300*shift)), position.getYPos());
+		}
+//		if(position.getXPos() > 1.07){
+//			is_alive = false;
+//			remove(false);
+//			
+//		}
+		x_velocity = ((position.getYPos() > game.map.river.position.y + 1.0/100)&&
+				(position.getYPos() < game.map.river.position.y + 1.0/100 + shift))?.0033:0;
+		if(position.getYPos() >= game.map.river.position.y + 1.0/100 + shift) x_velocity = .0033; //SHOULD GET CLEANED UP AT SOME POINT (mason)
+		if(updates % 5 == 0) moveWaterObject();
+		if(updates % 10 == 0) cur_image = (cur_image + 1) % 3;
+	}
+
+	/**
+	 * Stefan
+	 * moves the object according to its current velocity
+	 */
+	public void moveWaterObject(){
+		double x_new = position.getXPos() + x_velocity;
+		double y_new = position.getYPos() + y_velocity;
+		position.setPosition(x_new, y_new);
+	}
+	
+	/**
+	 * Stefan
+	 * Removes the object and adds or subtracts score
+	 * The input controlse add(true) and subtract(false)
+	 */
+	public void remove(boolean score){
+		int points = score ? point_value : (-1*point_value);
+		game.player.player_score.addScore(points);
+		game.map.water_objects.remove(this);
+		
+	}
+	
+	/**
+	 * Joe
+	 * checks to see if the mouse click is within the range of the image representing
+	 * the water object
+	 */
+	public boolean checkClickRange(double x, double y) {
+		double x_range = 0.02;
+		double y_range = 0.02;
+		
+		return ((x >= position.x && x <= position.x + x_range) && (y <= position.y + y_range && y >= position.y));
+	}
+	
+	/**
+	* Joe
+	* Checks to see if the mouse click is within the range of the image representing
+	* the bin for the water object.
+	*/
+	public boolean checkIfInBin(double x, double y) {
+		return x >= lower_bin_x && x <= upper_bin_x && y >= lower_bin_y && y <= upper_bin_y;
+	}
+}

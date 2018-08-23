@@ -1,0 +1,256 @@
+package group2.game;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.swing.Timer;
+
+public class RiverBank {
+	Boolean[][] can_place_object;
+	ConcurrentHashMap<Position,RiverBankObjects> objects; //(0,0)=TOP LEFT, (1,0)=TOP RIGHT, (0,1)= BOTTOM LEFT, (1,1)=BOTTOM RIGHT for middle banks; (0,0)=top (0,1)=bottom for outer banks
+	Boolean[][] permanent_erosion;
+	Position position;
+	Random rand = new Random();
+	long time = 30*1000;
+	volatile boolean eroding = false;
+	int colSize;
+	int rowSize;
+	double height;
+	double width;
+	int ID; //0 = left bank, 1= middle left bank, 2=middle right bank, 3=right bank
+
+
+	Timer timer = new Timer((int)time, new ActionListener(){ 
+		@Override
+		public void actionPerformed(ActionEvent evt){
+			timer.stop();
+			eroding = true;
+		}});
+
+	
+	public RiverBank(int colSize, int rowSize, Position position, double width, double height, int ID){
+		this.colSize=colSize;
+		this.rowSize = rowSize;
+		this.position=position;
+		this.height=height;
+		this.width=width;
+		this.ID=ID;
+		can_place_object = new Boolean[colSize][rowSize];
+		permanent_erosion = new Boolean[colSize][rowSize];
+		initializeBufferArray();
+		objects = new ConcurrentHashMap<Position,RiverBankObjects>();
+		timer.start();
+	}
+	
+
+	public  boolean addBuffer(Buffer b, Position coordinates){
+		if (objects.containsKey(coordinates)){
+			if (objects.get(coordinates).ID=="Erosion"){
+				Erosion erosion = (Erosion)objects.get(coordinates);
+				if (!erosion.is_permanent){
+					erosion.getTimer().stop();
+					objects.remove(coordinates);
+					objects.put(coordinates, b);
+					if (coordinates.getXPos()==0){
+						if (coordinates.getYPos()==0)
+							b.position = new Position(position.getXPos(),position.getYPos());
+						else if (coordinates.getYPos()==1)
+							b.position = new Position(position.getXPos(),(position.getYPos()+height/2));
+					}
+					else if (coordinates.getXPos()==1){
+						if (coordinates.getYPos()==0)
+							b.position = new Position((position.getXPos()+width/2),position.getYPos());
+						else if (coordinates.getYPos()==1)
+							b.position = new Position((position.getXPos()+width/2),(position.getYPos()+height/2));
+					}
+					
+					b.coordinates=coordinates;
+					b.deployBuffer();
+					can_place_object[(int)coordinates.x][(int)coordinates.y]=false;
+					return true;
+				}
+				else if (erosion.is_permanent)
+					return false;
+			}
+			else if (objects.get(coordinates).ID=="Buffer")
+				return false;
+		}
+		if (coordinates.getXPos()==0){
+			if (coordinates.getYPos()==0)
+				b.position = new Position(position.getXPos(),position.getYPos());
+			else if (coordinates.getYPos()==1)
+				b.position = new Position(position.getXPos(),(position.getYPos()+height/2));
+		}
+		else if (coordinates.getXPos()==1){
+			if (coordinates.getYPos()==0)
+				b.position = new Position((position.getXPos()+width/2),position.getYPos());
+			else if (coordinates.getYPos()==1)
+				b.position = new Position((position.getXPos()+width/2),(position.getYPos()+height/2));
+		}
+		objects.put(coordinates, b);
+		b.coordinates=coordinates;
+		b.deployBuffer();
+		can_place_object[(int)coordinates.x][(int)coordinates.y]=false;
+		//System.out.println("buffer at "+coordinates.x+" "+coordinates.y);
+		return true;
+		
+			
+	}
+	
+	/*
+	 * Mason 
+	 * re-did the coordinate mapping to positions (4/14)
+	 * 
+	 * Mary added a check so the left and right most banks only have one column
+	 */
+	public Position checkCoordinates(double x, double y){
+		double bankX = position.getXPos();
+		double bankY = position.getYPos();
+		if (ID==1 || ID==2){
+		if( (x>=bankX) && (x<=(bankX+(width/2))) && (y>=bankY) && (y<=(bankY+(height/2))) )
+			return new Position(0,0);
+		else if( (x>=(bankX+(width/2)))  && (x<=(bankX + width)) && (y>=(bankY)) && (y<=(bankY+(height/2))) )
+			return new Position(1,0);
+		else if( (x>=bankX) && (x<=(bankX+(width/2))) && (y>=(bankY+(height/2))) && (y<=(bankY + height)) )
+			return new Position(0,1);
+		else if( (x>=(bankX+(width/2)))  && (x<=(bankX+width)) && (y>=(bankY+(height/2))) && (y<=(bankY+height)) )
+			return new Position(1,1);
+		}
+		else if (ID==0 || ID==3){
+			if( (x>=bankX) && (x<=(bankX+width)) && (y>=bankY) && (y<=(bankY+(height/2))) )
+				return new Position(0,0);
+			else if( (x>=bankX) && (x<=(bankX+width)) && (y>=(bankY+(height/2))) && (y<=(bankY + height)) )
+				return new Position(0,1);
+
+			}
+		
+		return null;
+		
+
+	}
+	
+	/*
+	 * Mary
+	 * Checks if click was in range of Bank and which RiverBankObject was clicked 
+	 */
+	public int checkIfInBank(double x, double y){
+		double bankX = position.getXPos();
+		double bankY = position.getYPos();
+		if (x >= bankX && x <= (bankX+width) && y >= bankY && y <= (bankY+height))
+			return ID;
+		else
+			return -1;
+		
+	}
+	
+	public void erode(){
+		if (ID==1 || ID==2){
+		int x = rand.nextInt(2);
+		int y;
+		if (can_place_object[x][0] || can_place_object[x][1]){
+			y=can_place_object[x][1]?1:0;
+			Position inputPosition=null;
+			if (x==0){
+				if (y==0)
+					inputPosition = new Position(position.getXPos(),position.getYPos());
+				else if (y==1)
+					inputPosition = new Position(position.getXPos(),(position.getYPos()+height/2));
+			}
+			else if (x==1){
+				if (y==0)
+					inputPosition = new Position((position.getXPos()+width/2),position.getYPos());
+				else if (y==1)
+					inputPosition = new Position((position.getXPos()+width/2),(position.getYPos()+height/2));
+			}
+			Erosion e = new Erosion(new Position(x,y), this, inputPosition);
+			e.run();
+			objects.put(e.coordinates, e);
+			can_place_object[x][y]=false;
+			System.out.println("eroding at" +e.coordinates.x+ "," +e.coordinates.y);
+			return;
+		}
+		
+		//make sure it's even possible to erode somewhere before calling erode() again
+		else{
+			for (int i=0; x<2; x++){
+				for (int j=0; x<2; x++){
+					if (can_place_object[i][j]){ 			
+						erode();
+						return;
+					}
+				}
+			}
+		}
+		}
+		else if (ID==0 || ID==3){
+			int x = 0;
+			int y;
+			if (can_place_object[x][0] || can_place_object[x][1]){
+				y=can_place_object[x][1]?1:0;
+				Position inputPosition=null;
+				if (y==0)
+					inputPosition = new Position(position.getXPos(),position.getYPos());
+				else if (y==1)
+					inputPosition = new Position(position.getXPos(),(position.getYPos()+height/2));
+				
+				Erosion e = new Erosion(new Position(x,y), this, inputPosition);
+				e.run();
+				objects.put(e.coordinates, e);
+				can_place_object[x][y]=false;
+				System.out.println("eroding at" +e.coordinates.x+ "," +e.coordinates.y);
+				return;
+		}
+			else{
+				for (int j=0; x<2; x++){
+					if (can_place_object[0][j]){ 			
+						erode();
+						return;
+					}
+				}
+			}
+		}
+	}
+			
+	
+	public int erosionFactor(int col){
+		int count = 0;
+		if(can_place_object[col][0]){
+			count++;
+		}
+		if(can_place_object[col][1]){
+			count++;
+		}
+		return count;
+	}
+	
+	private void initializeBufferArray(){
+		for(int i = 0; i < colSize; i++){
+			for(int j = 0; j < rowSize; j++){
+				can_place_object[i][j] = true;
+				permanent_erosion[i][j] = false;
+			}
+		}
+	}
+	
+	public  void removeBuffer(Buffer b, Position coordinates){
+		objects.remove(coordinates);
+		
+	}
+	
+	public void removeErosion(Erosion e , Position coordinates){
+		objects.remove(coordinates);
+	}
+	
+	/*
+	 * Mary
+	 * Each call there is a small chance a bank will erode, checks to see if erosion has become permanent or if a buffer has died  
+	 */
+	public  void update(){
+		if (rand.nextInt(1500)==0 && eroding)
+			erode();
+		
+	}
+
+
+}

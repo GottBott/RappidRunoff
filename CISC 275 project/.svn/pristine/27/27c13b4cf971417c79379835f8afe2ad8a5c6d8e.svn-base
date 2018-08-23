@@ -1,0 +1,39 @@
+package group2.game;
+import java.util.ArrayList;
+
+
+public abstract class RunningWater {
+
+	int water_speed;
+	double water_width;
+	double water_height;
+	Position position;
+	
+	Position river_position = new Position(0,4.0/5);
+	
+	ArrayList<WaterObjects> water_objects;
+	int water_identifier;
+	
+	
+	
+	
+	
+	public void changeWidth(int newWidth){
+		
+	}
+	
+	public void changeSpeed(int newSpeed){
+		
+	}
+	
+	public boolean addObject(WaterObjects object){
+		return false;
+		
+	}
+	
+	public boolean removeObject(WaterObjects object){
+		return false;
+		
+	}
+
+}

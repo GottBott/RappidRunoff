@@ -1,0 +1,17 @@
+
+// ben Gotthold
+
+// this is the class that powerups will inherit from
+// soon to be abstract
+
+public class MenuObject {
+	
+	Position position;
+	double width = 1.0/13;
+	double height = 1.0/6;
+	
+	public MenuObject(Position p){
+	this.position = p;	
+	}
+
+}

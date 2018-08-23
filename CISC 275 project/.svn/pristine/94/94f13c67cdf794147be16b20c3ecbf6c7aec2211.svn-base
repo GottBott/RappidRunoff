@@ -1,0 +1,14 @@
+package group2.game;
+
+// Ben Gotthold
+// 4/3/13
+
+public class River extends RunningWater{
+
+	
+	public River(){
+		position = river_position;
+		water_width = (1);
+		water_height = (1.0/5);
+	}
+}

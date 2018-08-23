@@ -1,0 +1,55 @@
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.Timer;
+
+
+public class Erosion extends RiverBankObjects implements Runnable{
+
+	Boolean is_permanent;
+	double width = 1.0/11;
+	double height = 1.0/25;
+	boolean visible = false;
+	boolean eroding=false;
+	long time = 10*1000;
+	Boolean is_alive;
+	
+	//makes erosion permanent after 10 seconds
+	Timer timer;
+
+Erosion(Position coordinates){
+	this.coordinates = coordinates;
+	this.is_alive = true;
+	this.is_permanent = false;
+	this.ID="Erosion";
+	this.timer=new Timer((int)time, new ActionListener(){ 
+		public void actionPerformed(ActionEvent evt){
+			timer.stop();
+			is_permanent = true;
+		}});
+}
+
+
+
+@Override
+public void run() {
+	timer.start();
+	}
+	
+	public  Boolean checkIfPermanent(){
+		return is_permanent;
+	}
+	public  Boolean checkIfAlive(){
+		return is_alive;
+	}
+	public double getXCoordinate(){
+		return coordinates.x;
+	}
+	public double getYCorrdinate(){
+		return coordinates.y;
+	}
+	public Timer getTimer(){
+		return timer;
+	}
+
+}

@@ -1,0 +1,263 @@
+package group2.game;
+
+/**
+ * Stefan
+ * 4/3/13
+ */
+
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.util.Random;
+
+import javax.swing.JFrame;
+
+public class RapidRunoffGame implements Runnable {
+
+	public static void main(String[] args) {
+
+		RapidRunoffGame game = new RapidRunoffGame();
+		game.start();
+
+	}
+
+	Map map;
+	ScoreData score_data;
+	Quiz[] quiz_bank = new Quiz[20];
+	InputHandler input_handler;
+	Random rand = new Random();
+	Player player;
+	JFrame frame = new JFrame();
+	DrawGame draw_game;
+	SplashScreen splash_screen;
+	GUIInput gui;
+	
+	public String name = "Rappid Runoff";
+	
+	long start_time;
+	long last_draw = start_time;
+	long time_gap;
+    long pause_time;
+	long feedbackStartTime;
+	
+    int update_count;
+	int game_time;
+	
+	public double screen_height;
+	public double screen_width;
+	
+	
+	public boolean arcademode;
+	public boolean paused = false;
+	public boolean pause = true;
+	public boolean game_running = true;
+	public boolean score_up = false;
+	public boolean quizMode = false;
+	public boolean updates = true;
+	public boolean quizFeedbackMode = false;
+	public boolean home_screen; // True if we want home screen to be visible
+	public boolean game_screen; // True if we are playing the game
+	public boolean high_score_screen;// True if we are playing the game
+	public boolean intro_screen; //True right before game play starts
+	public boolean code_screen; // when entering a code
+	public Boolean valid_code; // player types in invalid code
+
+	
+	
+	@SuppressWarnings("deprecation")
+	public RapidRunoffGame() {
+
+		this.splash_screen = new SplashScreen(this);
+		
+		frame.getContentPane().add(splash_screen);
+		frame.setTitle("Rapid Runoff");
+		frame.setIconImage(DrawGame.OilImage[0]);
+		frame.setBackground(Color.WHITE);
+		frame.setExtendedState(Frame.MAXIMIZED_BOTH);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		frame.setVisible(true);
+		frame.setResizable(false);
+		Dimension size = frame.getBounds().getSize();
+		screen_width = size.getWidth();
+		screen_height = size.getHeight();
+
+		this.draw_game = new DrawGame(this);
+		this.input_handler = new InputHandler(this);
+		ReadCodes.loadCodes();
+
+		frame.getContentPane().remove(splash_screen);
+		frame.getContentPane().add(draw_game);
+		frame.setTitle("Rapid Runoff");
+		frame.setIconImage(DrawGame.OilImage[0]);
+		frame.setCursor(Cursor.HAND_CURSOR);
+		frame.setBackground(Color.WHITE);
+		frame.setExtendedState(Frame.MAXIMIZED_BOTH);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().addMouseListener(input_handler);
+
+		frame.setVisible(true);
+		frame.setResizable(false);
+
+	}
+	
+	
+	public void reset(){
+		time_gap = 0;
+	    pause_time = 0;
+		feedbackStartTime = -1;
+	    update_count = 0;
+		game_time = 120000;
+		
+		this.home_screen = true; // We want to start at the home screen
+		this.game_screen = false; // Only one of these 3 can be true at a time
+		this.high_score_screen = false; // Only one of these 3 can be true at a // time
+		this.code_screen = false;
+		this.intro_screen=false;
+
+		this.map = new Map(this);
+		this.player = new Player();
+		this.start_time = System.currentTimeMillis();
+		addQuizzes();
+		DrawGame.first_fert = false;
+		DrawGame.first_oil = false;
+		DrawGame.first_erosion_temp = false;
+		DrawGame.first_erosion_per = false;
+		DrawGame.first_powerup = false;
+		DrawGame.first_quiz = false;
+		
+//		arcademode = true;
+		if(arcademode){ 
+			WaterObjects.point_value = 0;
+			
+		}
+	}
+
+	private void addQuizzes() {
+		
+		quiz_bank[0] = StaticQuizes.quiz0;
+		quiz_bank[1] = StaticQuizes.quiz1;
+		quiz_bank[2] = StaticQuizes.quiz2;
+		quiz_bank[3] = StaticQuizes.quiz3;
+		quiz_bank[4] = StaticQuizes.quiz4;
+
+	}
+
+	public void highScoreGUI() {
+		if (!score_up) {
+			score_up = true;
+			gui = new GUIInput(this,true);
+			gui.createAndShowGUI();
+
+		}
+	}
+
+	/**
+	 * Stefan pauses the game on next update(use this to pause and unpause)
+	 */
+	public void pause_or_unpause() {
+		pause = !pause;
+	}
+
+	/**
+	 * Stefan pauses the game
+	 */
+	private void pauseGame() {
+		paused = true;
+		pause_time = System.nanoTime();
+		while (pause) {
+			System.gc();
+			reDraw();
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		pause_time = System.nanoTime() - pause_time;
+		paused = false;
+	}
+	
+	/**
+	 * Ben Gotthold re draws the game 30 times a seconds and after the timer
+	 * stopped
+	 */
+	public void reDraw() {
+		long now_time = System.currentTimeMillis();
+
+		if (time_gap > 33) { // this is the frequency of refresh
+			last_draw = System.currentTimeMillis();
+			draw_game.repaint();
+			time_gap = 0;
+
+		} else {
+			time_gap = now_time - last_draw;
+
+		}
+	}
+
+	/**
+	 * Stefan Contains the main loop of the game
+	 */
+	@Override
+	public void run() {
+		reset();
+
+		long last_time = System.nanoTime();
+		double unprocessed = 0;
+		double ns_per_update = 1000000000.0 / 60;
+		long last_time1 = System.currentTimeMillis();
+
+		while (game_running) {
+			// System.out.println(game_time);
+			long now = System.nanoTime();
+			unprocessed += (now - last_time) / ns_per_update;
+			last_time = now;
+			reDraw(); // ben - calls  redraw function
+			while (unprocessed >= 1) {
+				update();
+				unprocessed -= (pause_time / ns_per_update) + 1;
+				last_time1 += pause_time / 1000000;
+				pause_time = 0;
+			}
+			//background 
+			long now1 = System.currentTimeMillis();
+			if (now1 - last_time1 > 500) {
+				draw_game.bg_count = (draw_game.bg_count + 1) % 3; 
+				game_time -= (now1 - last_time1);
+				
+				last_time1 = now1;
+			}
+
+			if (game_time < 0) // ben - stop the time from being negative // but keep the game running	
+				game_time = 0;
+		}
+	}
+
+	public void start() {
+		new Thread(this).start();
+	}
+
+	//dont use
+	public void stop() {
+	}
+
+	/**
+	 * Stefan updates all elements of the game
+	 */
+	public void update() {
+		update_count++;
+		if (pause) {
+			pauseGame();
+		}
+		if (game_time <= 0) {
+			highScoreGUI();
+		} else {
+			if (update_count % 300 == 0) {
+				map.updateSpeed(game_time);
+			}
+			map.update();
+		}
+	}
+}

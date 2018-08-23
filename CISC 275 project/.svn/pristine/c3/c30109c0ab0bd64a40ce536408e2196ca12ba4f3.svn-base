@@ -1,0 +1,30 @@
+import java.awt.Color;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
+/**
+ * Joe
+ * 4/2/13
+ */
+public class Fertilizer extends WaterObjects{
+
+	public Fertilizer(Position p, RapidRunoffGame g) {
+		super(p, g);
+		this.color = Color.GREEN;
+		this.lower_bin_x = .918;
+		this.upper_bin_x = .999;
+		this.lower_bin_y = .50;
+		this.upper_bin_y = .625;
+		
+		try {
+			image[0] = ImageIO.read(new File("fert1.png"));
+			image[1] = ImageIO.read(new File("fert2.png"));
+			image[2] = ImageIO.read(new File("fert3.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		cur_image = 0;
+	}
+}

@@ -1,0 +1,18 @@
+package group2.game;
+
+// ben Gotthold
+
+// this is the class that powerups will inherit from
+// soon to be abstract
+
+public class MenuObject {
+	
+	Position position;
+	double width = 1.0/11;
+	double height = 1.0/5;
+	
+	public MenuObject(Position p){
+	this.position = p;	
+	}
+
+}

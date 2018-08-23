@@ -1,0 +1,229 @@
+package group2.game;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+
+import org.junit.Test;
+
+
+
+public class TestGame {
+
+	//WHAT DO WE WANT TO TEST!!!?????
+	
+	// moving objects along river
+	// objects increasing / decreasing players score
+	// count number of objects collected
+	// quiz answers
+	// generate erosion
+	// adding & removing buffers
+	// tracking player movement and clicks
+	
+	
+	
+	//Tests the creation of a new set of score data; 
+	@Test
+	public void testNewScoreData(){
+		ScoreData d = new ScoreData("Ben Gotthold", 54321,"date");
+		
+		assertEquals(d.name,"Ben Gotthold");
+		assertEquals(d.score,54321,0);
+		assertEquals(d.date,0.92392,"date");
+		assertEquals(d.rank,0);
+		
+	}
+	
+	@Test
+	public void testQuiz() {
+		String q = "Question";
+		String[] choices = {"A","B","C","D"};
+		Quiz q1 = new Quiz(q,choices,2);
+		
+		// Make sure constructor works properly
+		assertEquals(q,q1.question);
+		assertEquals(choices,q1.choices);
+		assertEquals(2,q1.answer);
+		
+		// Make sure checkChoice() works as expected
+		assertFalse(q1.checkChoice(0));
+		assertFalse(q1.checkChoice(1));
+		assertTrue(q1.checkChoice(2));
+		assertFalse(q1.checkChoice(3));
+	}
+	
+	// tests to make sure scores are saved in the correct order
+	// tests getRank()
+	@Test
+	public void testRankOrder(){
+		ScoreData d1 = new ScoreData("Ben", 50,"");
+		ScoreData d2 = new ScoreData("Dan", 20,"");
+		ScoreData d3 = new ScoreData("Forr", 80,"");
+		
+		d1.addDataToList();
+		d2.addDataToList();
+		d3.addDataToList();
+		
+		//ArrayList<ScoreData> scores = HighScoreList.getScores();
+
+		// lower rank means higher score
+		assertTrue(d1.getRank()<d2.getRank());
+		assertTrue(d2.getRank()>d3.getRank());
+		
+
+	}
+	
+/*	// tests addBuffer method in RiverBank class
+	@Test
+	public void testAddBuffer(){
+		RiverBank testBank = new RiverBank(2);
+		
+		//initially, can place buffer anywhere.  This should eventually be in RiverBank class
+		for (int i=0; i<3; i++){
+			for(int j=0; j<3; j++)
+				testBank.can_place_buffer[i][j]=true;
+		}
+		
+		Position p1 = new Position(0,0);
+		testBank.position = p1;
+		Buffer b1 = new Buffer(p1);
+		
+		//test that a buffer can be added on a bank of all true values
+		assertTrue(testBank.addBuffer(b1));
+		
+		//test that when a bank is placed, corresponding element of can_place_buffer is made false
+		assertFalse(testBank.can_place_buffer[0][0]);
+		
+		//test that the buffer is added to river_bank_objs
+		assertEquals((testBank.river_bank_objs).get(0), b1);
+		
+		//test that a buffer cannot be added where can_place_buffer is false
+		assertFalse(testBank.addBuffer(b1));
+			
+	}
+	
+	//test removeBuffer method in RiverBank class
+	@Test
+	public void testRemoveBuffer(){
+		RiverBank testBank = new RiverBank(2);
+		
+		//initially, can place buffer anywhere.  This should eventually be in RiverBank class
+		for (int i=0; i<3; i++){
+			for(int j=0; j<3; j++)
+				testBank.can_place_buffer[i][j]=true;
+		}
+		
+		Position p1 = new Position(0,0);
+		testBank.position = p1;
+		Buffer b1 = new Buffer(p1);
+		
+		//test that a buffer that is not on the bank cannot be removed
+		assertFalse(testBank.removeBuffer(b1));
+		
+		//place buffer on bank
+		testBank.river_bank_objs.add(b1);
+		testBank.can_place_buffer[0][0] = false;
+		
+		//test that a buffer that is on the bank can be removed
+		assertTrue(testBank.removeBuffer(b1));
+		
+		//test that buffer was removed from river_bank_objs
+		assertEquals((testBank.river_bank_objs).size(), 0);
+		
+		//test that when buffer is removed, corresponding element of can_place_buffer is true
+		assertTrue(testBank.can_place_buffer[0][0]);
+	}
+*/
+	
+	@Test
+	public void testRunningWater(){
+		RunningWater testStream = new Stream(1);
+		WaterObjects oil = new Oil(null, null,7);
+		
+		//make sure cannot remove object if no objects in stream
+		assertFalse(testStream.removeObject(oil));
+		
+		//make sure an object is successfully added
+		assertTrue(testStream.addObject(oil));
+		
+		//make sure object is successfully added to water_objects
+		assertEquals((testStream.water_objects).get(0), oil);
+		
+		assertTrue(testStream.removeObject(oil));
+		
+		//make sure object is successfully removed from water_objects
+		assertEquals((testStream.water_objects).size(), 0);
+		
+		//test changeWidth()
+		testStream.changeWidth(10);
+		assertEquals(testStream.water_width, 10);
+		
+		//test changeSpeed()
+		testStream.changeSpeed(5);
+		assertEquals(testStream.water_speed, 5);
+
+	}
+	
+	// tests to make sure scores read and write correctly
+	// tests adddataToList() 
+	@Test
+	public void testSaveScore(){
+		ScoreData d1 = new ScoreData("Ben", 50.0,"");
+		ScoreData d2 = new ScoreData("Dan", 20,"");
+		ScoreData d3 = new ScoreData("Forr", 80,"");
+		
+		d1.addDataToList();
+		d2.addDataToList();
+		d3.addDataToList();
+		
+		
+		ArrayList<ScoreData> scores = HighScoreList.getScores();
+		
+		assertTrue(scores.contains(d1));
+		assertTrue(scores.contains(d2));
+		assertTrue(scores.contains(d3));
+		
+	}
+	
+	@Test
+	public void testScore(){
+		Score testScore = new Score(0,0,0,0,0);
+		
+		//test addScore()
+		testScore.addScore(10);
+		assertEquals(testScore.game_score, 10);
+		
+		testScore.addScore(-20);
+		assertEquals(testScore.game_score, 0);
+	}
+
+	//Stefan
+	@Test
+	public void testMap(){
+		RapidRunoffGame g = new RapidRunoffGame();
+		Map m = new Map(g);
+		
+		//Test updateSpeed
+		m.updateSpeed(100);
+		assertEquals(m.updates_per_water_object, 67);
+	}
+	
+	//Stefan
+	@Test
+	public void testWaterObjects(){
+		RapidRunoffGame g = new RapidRunoffGame();
+		WaterObjects w = new Oil(new Position(0.1, 0.1), g, 0);
+		
+		//Test moveWaterObject
+		w.moveWaterObject();
+		assertTrue(w.position.y == 0.105);
+		assertTrue(w.position.x == 0.1);
+		
+		//Test remove
+		g.map.water_objects.add(w);
+		w.remove(true);
+		assertTrue(g.player.player_score.game_score == w.point_value);
+		assertTrue(!g.map.water_objects.contains(w));
+	}
+}

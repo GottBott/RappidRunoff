@@ -1,0 +1,15 @@
+package group2.game;
+
+/**
+ * Mary 4/4/13
+ */
+public class Broom extends PowerUp {
+
+	Broom(Position position) {
+		super(position);
+
+		text = "BROOM";
+		image = DrawGame.Broom;
+	}
+
+}

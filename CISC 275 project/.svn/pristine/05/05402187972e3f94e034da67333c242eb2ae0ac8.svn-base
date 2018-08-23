@@ -1,0 +1,18 @@
+/**
+ * Mary
+ * 4/4/13
+ */
+public class Broom extends PowerUp {
+	
+	Broom(Position position){
+		super(position);
+		lower_x = 0.01;
+		lower_y = 0.16;
+		upper_x = .08;
+		upper_y = 0.24;
+		text = "BROOM";
+	}
+	/*Broom(String text, Quiz quiz) {
+		super(text,quiz);
+	}*/
+}

@@ -1,0 +1,104 @@
+package group2.game;
+
+import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Date;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.WindowConstants;
+
+public class GUIInput extends JPanel implements ActionListener {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	JTextField textField;
+	public static JFrame frame;
+	Boolean score;
+
+	RapidRunoffGame game;
+
+	public GUIInput(RapidRunoffGame g, Boolean score) {
+		super();
+		this.game = g;
+		this.score = score;
+		frame = new JFrame(determineTitle(score));
+		textField = new JTextField(20);
+		textField.addActionListener(this);
+
+		// Add Components to this panel.
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridwidth = GridBagConstraints.REMAINDER;
+
+		c.fill = GridBagConstraints.HORIZONTAL;
+		add(textField, c);
+
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 1.0;
+		c.weighty = 1.0;
+
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent evt) {
+
+		String text = textField.getText();
+		// textArea.append(text + newline);
+		if(score){
+		ScoreData pd = new ScoreData(text, game.player.player_score.game_score,
+				new Date().toString().substring(4, 11));
+		game.player.player_data = pd;
+		pd.addDataToList();
+		}
+		else{
+			//call stefans function if true mason
+		}
+
+		frame.dispose();
+
+	}
+
+	/**
+	 * Create the GUI and show it. For thread safety, this method should be
+	 * invoked from the event dispatch thread.
+	 */
+	public Boolean createAndShowGUI() {
+		// Create and set up the window.
+
+		frame.setBackground(Color.GRAY);
+		// frame.setLocation((int)(game.screen_width*.25),(int)(game.screen_height*.25));
+		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		frame.setAlwaysOnTop(true);
+
+		if(score){
+		frame.setBounds((int) (game.screen_width * .55),
+				(int) (game.screen_height * .4),
+				(int) (game.screen_width * .5), (int) (game.screen_height * .5));
+		}
+		else{
+			frame.setBounds((int) (game.screen_width * .4),
+					(int) (game.screen_height * .5),
+					(int) (game.screen_width * .5), (int) (game.screen_height * .5));
+		}
+
+		// Add contents to the window.
+		frame.add(this);
+
+		// Display the window.
+		frame.pack();
+		frame.setAlwaysOnTop(true);
+		frame.setVisible(true);
+		return true;
+	}
+	
+	public String determineTitle(Boolean score){
+		if(score)
+			return "High Score! Enter Name";
+		return "Please Enter Unlock Code!";
+	}
+
+}

@@ -1,0 +1,34 @@
+COMMENT FORMAT
+
+(for top of documents)
+/**
+ * "Last person to edit"
+ * "date of last edit"
+ */
+
+
+(for methods)
+/**
+ * "author"
+ * "description of what the method does"
+ */
+	(put method here)
+
+
+
+All classes that need to be updated will have a function 
+	public void update();
+	(should we make this an interface?)
+
+
+
+Anything else that is important to keep consistant can be put in this document for reference.
+
+
+RIVER START POSITIONS FOR WATEROBJECTS
+River 1: (0.22,0.3)
+River 2: (0.49,0.3)
+River 3: (0.76,0.3)
+
+ANY TIME YOU ITERATE THROUGH THE water_objects LIST YOU CAN NOT USE A FOR EACH LOOP.
+YOU MUST USE THE INDEX OR YOU WILL GET A Concurrent Modification Exception

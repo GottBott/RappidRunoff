@@ -1,0 +1,331 @@
+package group2.game;
+
+import java.awt.Color;
+import java.awt.Image;
+import java.util.Random;
+
+/**
+ * Stefan 4/3/13
+ */
+public abstract class WaterObjects {
+
+	Position position;
+	RapidRunoffGame game;
+	int point_value = 10;
+	Boolean is_alive = true;
+	public int updates = 0;
+	public boolean is_clicked = false;
+	public Color color = null;
+	String id = "";
+	public boolean removed = false;
+	public int remove_time = 0;
+
+	Bin bin;
+
+	int time_num = 0;
+	double shift;
+	Random rand = new Random();
+	int sin_num = (int) rand.nextDouble() * 300;
+
+	double x_velocity = 0;
+	double y_velocity = 0.005;
+
+	public Image[] image;
+	public int cur_image;
+	int streamnumber;
+
+	public WaterObjects(Position p, RapidRunoffGame g, int stream) {
+		this.position = p;
+		this.game = g;
+		this.shift = rand.nextDouble() / (g.screen_height * .0114);
+		this.streamnumber = stream;
+	}
+
+	/**
+	 * Joe checks to see if the mouse click is within the range of the image
+	 * representing the water object
+	 */
+	public boolean checkClickRange(double x, double y) {
+		double x_range = 0.02;
+		double y_range = 0.02;
+
+		return ((x >= position.x - x_range && x <= position.x + 2 * x_range) && (y <= position.y
+				+ 2 * y_range && y >= position.y - y_range));
+	}
+
+	/**
+	 * Joe Checks to see if the mouse click is within the range of the image
+	 * representing the bin for the water object.
+	 */
+	public boolean checkIfInBin(double x, double y) {
+		return x >= bin.position.x && x <= bin.position.x + bin.position.width
+				&& y >= bin.position.y
+				&& y <= bin.position.y + bin.position.height+.03;
+	}
+
+	// ben
+	// over ride in oil and fert
+	public void increment() {
+
+	}
+
+	/**
+	 * Stefan moves the object according to its current velocity
+	 */
+	public void moveWaterObject() {
+		double x_new = position.getXPos() + x_velocity;
+		double y_new = position.getYPos() + y_velocity;
+		position.setPosition(x_new, y_new);
+	}
+
+	/**
+	 * Stefan Removes the object and adds or subtracts score The input controls
+	 * add(true) and subtract(false)
+	 */
+	public void remove(boolean score) {
+		removed = true;
+		int points = score ? point_value : (-1 * point_value);
+		game.player.player_score.addScore(points);
+
+	}
+	
+	public void setPos(double x, double y){
+		position.x = x;
+		position.y = y;
+	}
+	
+	public void destroy(){
+		game.map.water_objects.remove(this);
+	}
+
+	/**
+	 * Mary checks if an object is in the river and if it's passing permanent
+	 * erosion
+	 */
+	public boolean checkIfInRiver() {
+		if (position.getYPos() > game.map.river.position.y + 1.0 / 100 + shift) {
+			x_velocity = 0.0033;
+			y_velocity = 0;
+			RiverBank midLeftBank = game.map.river_banks.get(1);
+			RiverBank midRightBank = game.map.river_banks.get(2);
+			RiverBank rightBank = game.map.river_banks.get(3);
+
+			// if object is under lower middle left bank, left column
+			if ((midLeftBank.position.getXPos() <= position.getXPos())
+					&& (position.getXPos() < (midLeftBank.position.getXPos() + midLeftBank.width / 2))) {
+				if (midLeftBank.permanent_erosion[0][1]) {
+					x_velocity = 0.005;
+					// System.out.println("passing erosion");
+
+				}
+			}
+
+			// if object is under lower middle left bank, right column
+			else if (((midLeftBank.position.getXPos() + midLeftBank.width / 2) <= position
+					.getXPos())
+					&& (position.getXPos() <= (midLeftBank.position.getXPos() + midLeftBank.width))) {
+				if (midLeftBank.permanent_erosion[1][1]) {
+					x_velocity = 0.005;
+					// System.out.println("passing erosion");
+
+				}
+			}
+			// if object is under lower middle right bank, left column
+			else if ((midRightBank.position.getXPos() <= position.getXPos())
+					&& (position.getXPos() < (midRightBank.position.getXPos() + midRightBank.width / 2))) {
+				if (midRightBank.permanent_erosion[0][1]) {
+					x_velocity = 0.005;
+					// System.out.println("passing erosion");
+
+				}
+			}
+
+			// if object is under lower middle right bank, right column
+			else if (((midRightBank.position.getXPos() + midRightBank.width / 2) <= position
+					.getXPos())
+					&& (position.getXPos() <= (midRightBank.position.getXPos() + midRightBank.width))) {
+				if (midRightBank.permanent_erosion[1][1]) {
+					x_velocity = 0.005;
+					// System.out.println("passing erosion");
+
+				}
+			}
+
+			// if object is under lower right bank
+			else if (((rightBank.position.getXPos()) <= position.getXPos())
+					&& (position.getXPos() <= (rightBank.position.getXPos() + rightBank.width))) {
+				if (rightBank.permanent_erosion[0][1]) {
+					x_velocity = 0.005;
+					// System.out.println("passing erosion");
+
+				}
+			}
+
+			if (time_num % 20 == 0)
+				if (sin_num < 300)
+					sin_num++;
+				else {
+					sin_num = 0;
+				}
+			position.setPosition(position.getXPos(), position.getYPos()
+					+ 0.0005 * Math.sin(sin_num + (300 * shift)));
+			return true;
+		}
+		return false;
+	}
+
+	public boolean checkIfInStream() {
+
+		x_velocity = 0;
+		y_velocity = 0.005;
+
+		// go along with curvature of graphics
+		if (streamnumber == 2)
+			x_velocity = -.0008;
+		if (streamnumber == 0)
+			x_velocity = .0008;
+
+		RiverBank leftBank = game.map.river_banks.get(0);
+		RiverBank midLeftBank = game.map.river_banks.get(1);
+		RiverBank midRightBank = game.map.river_banks.get(2);
+		RiverBank rightBank = game.map.river_banks.get(3);
+
+		// object is in stream 1
+		if (streamnumber == 0) {
+
+			// object is passing top row
+			if ((leftBank.position.getYPos() <= position.getYPos())
+					&& (position.getYPos() < (leftBank.position.getYPos() + leftBank.height / 2))) {
+				if (leftBank.permanent_erosion[0][0]
+						|| midLeftBank.permanent_erosion[0][0]) {
+					y_velocity = 0.008;
+					// System.out.println("in stream "+ streamnumber
+					// +"passing erosion");
+				}
+			}
+
+			// object is passing bottom row
+			else if (((leftBank.position.getYPos() + leftBank.height / 2) <= position
+					.getYPos())
+					&& (position.getYPos() <= (leftBank.position.getYPos() + leftBank.height))) {
+				if (leftBank.permanent_erosion[0][1]
+						|| midLeftBank.permanent_erosion[0][1]) {
+					y_velocity = 0.008;
+					// System.out.println("in stream "+ streamnumber
+					// +"passing erosion");
+				}
+			}
+		}
+
+		// object is in stream 2
+		else if (streamnumber == 1) {
+
+			// object passing top row
+			if ((midLeftBank.position.getYPos() <= position.getYPos())
+					&& (position.getYPos() < (midLeftBank.position.getYPos() + midLeftBank.height / 2))) {
+				if (midLeftBank.permanent_erosion[1][0]
+						|| midRightBank.permanent_erosion[0][0]) {
+					y_velocity = 0.008;
+					// System.out.println("in stream "+ streamnumber
+					// +"passing erosion");
+				}
+			}
+
+			// object passing bottom row
+			else if (((midLeftBank.position.getYPos() + midLeftBank.height / 2) <= position
+					.getYPos())
+					&& (position.getYPos() <= (midLeftBank.position.getYPos() + midLeftBank.height))) {
+				if (midLeftBank.permanent_erosion[1][1]
+						|| midRightBank.permanent_erosion[0][1]) {
+					y_velocity = 0.008;
+					// System.out.println("in stream "+ streamnumber
+					// +"passing erosion");
+
+				}
+			}
+		}
+
+		// object is in stream 3
+		else if (streamnumber == 2) {
+
+			// object passing top row
+			if ((rightBank.position.getYPos() <= position.getYPos())
+					&& (position.getYPos() < (rightBank.position.getYPos() + rightBank.height / 2))) {
+				if (rightBank.permanent_erosion[0][0]
+						|| midRightBank.permanent_erosion[1][0]) {
+					y_velocity = 0.008;
+					// System.out.println("in stream "+ streamnumber
+					// +"passing erosion");
+				}
+			}
+
+			// object passing bottom row
+			else if (((rightBank.position.getYPos() + rightBank.height / 2) <= position
+					.getYPos())
+					&& (position.getYPos() <= (rightBank.position.getYPos() + rightBank.height))) {
+				if (rightBank.permanent_erosion[0][1]
+						|| midRightBank.permanent_erosion[1][1]) {
+					y_velocity = 0.008;
+					// System.out.println("in stream "+ streamnumber
+					// +"passing erosion");
+				}
+			}
+		}
+
+		if (time_num % 20 == 0)
+			if (sin_num < 300)
+				sin_num++;
+			else {
+				sin_num = 0;
+			}
+		position.setPosition(
+				position.getXPos() + 0.0005 * Math.sin(sin_num + (300 * shift)),
+				position.getYPos());
+		return true;
+	}
+
+	/**
+	 * Ben gave objects a more curved path down streams and through river
+	 * 
+	 * Mary 4/21 checks if passing permanent erosion, which increases speed
+	 */
+	public void update() {
+		if(!removed){
+			if (game.player.player_score.fertilizer_count >= 1) {
+				DrawGame.first_fert = true;
+			}
+			if (game.player.player_score.oil_count >= 1) {
+				DrawGame.first_oil = true;
+			}
+			time_num++;
+			time_num = (time_num % 300);
+			updates++;
+	
+			// checks if object is in river
+			if (checkIfInRiver()) {
+				if (updates % 5 == 0)
+					moveWaterObject();
+				if (updates % 10 == 0)
+					cur_image = (cur_image + 1) % 3;
+				return;
+			}
+	
+			// else object is in a stream
+			else {
+				checkIfInStream();
+				if (updates % 5 == 0)
+					moveWaterObject();
+				if (updates % 10 == 0)
+					cur_image = (cur_image + 1) % 3;
+				return;
+			}
+		}else{
+			position.y -= 0.001;
+			remove_time++;
+			if(remove_time >= 60){
+				destroy();
+			}
+		}
+	}
+
+}

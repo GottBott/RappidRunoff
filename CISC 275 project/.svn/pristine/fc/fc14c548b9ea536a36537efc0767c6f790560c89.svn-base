@@ -1,0 +1,31 @@
+package group2.game;
+/**
+ *Joe
+ *4/2/13
+ */
+public class Score {
+	int game_score;
+	
+	//these may be better in a different class
+	int oil_count;
+	int fertilizer_count;
+	
+	public Score (int game_score, int oil_count, int fertilizer_count) {
+		this.game_score = game_score;
+		this.oil_count = oil_count;
+		this.fertilizer_count = fertilizer_count;
+	}
+	
+	public void addScore(int s){
+		game_score += s;
+		game_score = game_score < 0 ? 0 : game_score;
+	}
+
+	public void incrementOil() {
+		oil_count++;
+	}
+	
+	public void incrementFertilizer() {
+		fertilizer_count++;
+	}
+}

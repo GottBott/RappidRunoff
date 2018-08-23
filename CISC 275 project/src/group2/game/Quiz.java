@@ -1,0 +1,40 @@
+package group2.game;
+
+public class Quiz {
+	String question; // The question
+	String[] choices = new String[4]; // Choices A,B,C, and D
+	int answer; // Index of the correct answer in choices (0 = A, 1 = B, 2 = C,
+				// 3 = D)
+	public String feedback_string;
+	boolean asked;
+	Boolean answered_correctly = false;
+
+	Quiz(String question, String[] choices, int answer) {
+		this.question = question;
+		for (int i = 0; i < 4; i++) {
+			this.choices[i] = choices[i];
+		}
+		this.answer = answer;
+		this.asked = false;
+	}
+
+	/**
+	 * Will check to see whether or not the answer the player choose was correct
+	 * or not. I imagine this will probably be called when the powerup is on the
+	 * screen and the player picks their choice. This method will then be called
+	 * from powerup to check if the player was right or not, and then perform
+	 * its actions based on the response.
+	 */
+	public boolean checkChoice(int choice) {
+		if (choice != this.answer){
+			feedback_string = "Sorry! Collect more polutants and try again.";
+			return false;
+		}
+		else{
+			feedback_string = "Correct! The city has now passed a new law";
+			answered_correctly = true;
+			return true;
+		}
+	}
+
+}

@@ -1,0 +1,4 @@
+StefanZ,1280,May 28 ,0
+StefanZ,260,May 27 ,1
+StefanZ,60,May 27 ,2
+StefanZ,1010,May 27 ,3

@@ -1,0 +1,215 @@
+/**
+ * Joe
+ * 4/3/13
+ */
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import javax.swing.JPanel;
+ 
+public class DrawGame extends JPanel {
+	
+
+	private static final long serialVersionUID = 1L;
+	
+	RapidRunoffGame game;
+	
+	// we should phase this out but kept it for those who are currently using it
+	double stream_width = (1.0/11);
+	
+	boolean initialized;
+
+	DrawGame(RapidRunoffGame g){
+		this.game = g;
+		initialized = false;
+	}
+   
+	// the paint component where objects are drawn
+  public void paintComponent(Graphics g) {
+    super.paintComponent(g);
+    
+   
+
+    
+    //set some color thickness and fonts
+    g.setColor(Color.BLUE);
+    Graphics2D g2d = (Graphics2D)g;
+    int width = 6;
+    g2d.setStroke(new BasicStroke(width));
+    Font f1 = new Font("serif", Font.BOLD, (int)game.screen_height/60 +(int)game.screen_width/75);
+    Font f2 = new Font("serif", Font.BOLD, (int)game.screen_height/125 +(int)game.screen_width/125);
+    Font f3 = new Font("serif", Font.BOLD, (int)game.screen_height/80 +(int)game.screen_width/125);
+    Font f4 = new Font("serif", Font.BOLD, (int)game.screen_height/65 +(int)game.screen_width/125);
+
+	g.setFont(f1);
+    
+   
+    // draw city
+	for (int i = 0; i < game.map.city.cities.length; i++) {
+		g.drawImage(game.map.city.cities[i],(int)(i*0.2*game.screen_width), 0,(int)(0.201*game.screen_width) , (int)(0.2*game.screen_height), null);
+	}
+	
+    // draws streams + river
+    for(RunningWater w: game.map.running_water){
+    	g.fillRect((int)(w.position.x*game.screen_width), (int)(w.position.y*game.screen_height), 
+    			(int)(w.water_width*game.screen_width), (int)(w.water_height*game.screen_height));
+    }
+    
+    
+    //draw menu which menu iterator
+    width = 4;
+    g2d.setStroke(new BasicStroke(width));
+    
+    
+    for(Menu m: game.map.menus){
+    	g.setColor(Color.GRAY);
+    	g.fillRect((int)(m.position.x*game.screen_width), (int)(m.position.y*game.screen_height), (int)(m.width*game.screen_width) , (int)(m.height*game.screen_height));
+    	
+    	// draw boxes
+    	for(MenuObject o: m.menu_objects){
+    		g.setColor(Color.BLACK);
+    		g.drawImage(m.bin_image,(int)(o.position.x*game.screen_width), (int)(o.position.y*game.screen_height), (int)(o.width*game.screen_width), (int)(o.height*game.screen_height),null);
+    		g.drawRect((int)(o.position.x*game.screen_width), (int)(o.position.y*game.screen_height), (int)(o.width*game.screen_width), (int)(o.height*game.screen_height));
+    		
+    	}
+    }
+        
+    // draw score
+    g.drawString(Integer.toString(game.player.player_score.game_score),(int)(.92*game.screen_width),(int)(.3*game.screen_height));
+    
+    //draw time
+    g.drawString((game.game_time / 1000) / 60 + ":"
+			   + ((game.game_time / 1000) % 60) / 10
+			   + (game.game_time / 1000) % 10,(int)(.92*game.screen_width),(int)(.25*game.screen_height));
+    g.drawString("Time:",(int)(game.screen_width*0.05),(int)(game.screen_height*0.045));
+    g.fillRect((int)(game.screen_width*0.11),(int)(game.screen_height*0.02),(int)(game.screen_width*0.126),(int)(game.screen_height*0.033));
+    g.setColor(Color.YELLOW);
+    g.fillRect((int)(game.screen_width*0.113),(int)(game.screen_height*0.024),(int)(game.screen_width*((double)(game.game_time*0.000001))),(int)(game.screen_height*0.025));
+    g.setColor(Color.BLACK);
+    
+    //draw pause
+    g.drawRect((int)(game.screen_width*0.02), (int)(game.screen_height*0.02), (int)(game.screen_width*0.02), (int)(game.screen_height*0.033));
+    g.drawLine((int)(game.screen_width*0.026), (int)(game.screen_height*0.029), (int)(game.screen_width*0.026), (int)(game.screen_height*0.043));
+    g.drawLine((int)(game.screen_width*0.033), (int)(game.screen_height*0.029), (int)(game.screen_width*0.033), (int)(game.screen_height*0.043));
+    
+    // draws pollutants
+    for(int i = 0; i < game.map.water_objects.size(); i++){
+    	WaterObjects w = game.map.water_objects.get(i);
+    	if (w.is_clicked) {
+    		g.setColor(w.color);
+    		width = 8;
+    	    g2d.setStroke(new BasicStroke(width));
+    		g.drawImage(w.image[w.cur_image],(int)game.frame.getContentPane().getMousePosition().getX() - (int)game.screen_width/50,(int)game.frame.getContentPane().getMousePosition().getY() - (int)game.screen_width/50,(int)game.screen_width/25,(int)game.screen_width/25,null);
+    		width = 4;
+    	    g2d.setStroke(new BasicStroke(width));
+    		//Draws where dragged WaterObject SHOULD be on screen
+    		g.setColor(Color.GRAY);
+    		g.drawOval((int)(w.position.x*game.screen_width),(int)(w.position.y*game.screen_height),(int)game.screen_width/50,(int)game.screen_width/50);
+    	}
+    	else {
+    		g.setColor(w.color);
+//    		g.drawOval((int)(w.position.x*game.screen_width),(int)(w.position.y*game.screen_height),(int)game.screen_width/50,(int)game.screen_width/50);
+//    		g.drawImage(w.image,(int)(w.position.x*game.screen_width),(int)(w.position.y*game.screen_height),(int)game.screen_width/25,(int)game.screen_width/25,null);
+    		
+//    		g.drawOval((int)(w.position.x*game.screen_width),(int)(w.position.y*game.screen_height),(int)game.screen_width/50,(int)game.screen_width/50);
+    		g.drawImage(w.image[w.cur_image],(int)(w.position.x*game.screen_width),(int)(w.position.y*game.screen_height),(int)game.screen_width/50,(int)game.screen_width/50,null);
+    	}
+    }
+    //draws powerUps, top rectangle is broom and middle rectangle is funnel
+    for(PowerUp p: game.map.power_ups){
+		g.setColor(Color.RED);
+		g.setFont(f2);
+		
+		g.drawRect((int)(p.position.x*game.screen_width), (int)(p.position.y*game.screen_height), (int)(p.width*game.screen_width), (int)(p.height*game.screen_height));
+		g.setColor(Color.BLACK);
+		if(p.ready)
+		g.drawString(p.text, (int)((p.position.x + .25*p.width)*game.screen_width), (int)((p.position.y + .25*p.height)*game.screen_height));
+	}
+    
+    // draw buffer zones and buffers
+    for(int i = 0; i < game.map.river_banks.size(); i++){
+    	RiverBank curBank = game.map.river_banks.get(i);
+    	for(int row = 0; row < curBank.can_place_buffer.length; row++){
+    		for(int col = 0; col < curBank.can_place_buffer.length; col++){
+    			if (curBank.objects.size()!=0){
+    				Position p=new Position(row,col);
+    				if (curBank.objects.containsKey(p)){
+    					if ((curBank.objects.get(p)).ID=="Buffer")
+    						g.setColor(Color.MAGENTA);
+    					else if ((curBank.objects.get(p)).ID=="Erosion"){
+    						g.setColor(Color.DARK_GRAY);
+    					}
+    				}
+    			}
+    			else g.setColor(curBank.can_place_buffer[row][col]?Color.GREEN:Color.RED);
+    			g.fillRect((int)(((.28+.09*row)+.27*i)*game.screen_width), (int)((.64+.08*col)*game.screen_height),
+    					(int)(.077*game.screen_width), (int)(.07*game.screen_height));
+    		}
+    	}
+    }
+    
+    for (Buffer b: game.map.buffers){
+    	g.setColor(Color.RED);
+		g.setFont(f2);
+		
+		g.drawRect((int)(b.position.x*game.screen_width), (int)(b.position.y*game.screen_height), (int)(b.width*game.screen_width), (int)(b.height*game.screen_height));
+		g.setColor(Color.BLACK);
+		if(b.ready)
+		g.drawString(b.text, (int)((b.position.x + .25*b.width)*game.screen_width), (int)((b.position.y + .25*b.height)*game.screen_height));
+    }
+   
+    /**
+   	 * Steve
+   	 * Pauses game & draws the quiz window
+   	 */
+       //Draws the quiz window
+       game.map.power_ups.get(0).ready = true;
+       String[] choices = new String[]{"A            Duck", "B             Cow", "C            Turkey", "D             Pig"};
+       game.map.power_ups.get(0).quiz = new Quiz("This is a question, the answer is A", choices, 0);
+       if(game.quizMode){
+    	 	System.out.println("inquiz");
+           	game.pause_or_unpause();
+           	g.setColor(Color.BLACK);
+           	g.drawRect(1, 1, (int)(game.screen_width - .01), (int)(game.screen_height - .01));
+           	g.fillRect(1, 1, (int)(game.screen_width - .01), (int)(game.screen_height- .01));
+           	g.setColor(Color.WHITE);
+           	g.drawString(game.map.power_ups.get(0).quiz.question, (int)(.05*game.screen_width),(int)(.1*game.screen_height));
+           	g.setColor(Color.RED);
+           	g.drawRect((int) (game.screen_width *.05), (int) (game.screen_height * .19) , (int)(game.screen_width * .05), (int)(game.screen_height * .1)); 
+           	g.drawRect((int) (game.screen_width *.05), (int) (game.screen_height * .39), (int)(game.screen_width * .05), (int)(game.screen_height * .1));
+           	g.drawRect((int) (game.screen_width *.05), (int) (game.screen_height * .59), (int)(game.screen_width * .05), (int)(game.screen_height * .1));
+           	g.drawRect((int) (game.screen_width *.05), (int) (game.screen_height * .79), (int)(game.screen_width * .05), (int)(game.screen_height * .1));
+           	g.drawString(game.map.power_ups.get(0).quiz.choices[0], (int) (game.screen_width *.07), (int) (game.screen_height * .25));
+           	g.drawString(game.map.power_ups.get(0).quiz.choices[1], (int) (game.screen_width *.07), (int) (game.screen_height * .45));
+           	g.drawString(game.map.power_ups.get(0).quiz.choices[2], (int) (game.screen_width *.07), (int) (game.screen_height * .65));
+           	g.drawString(game.map.power_ups.get(0).quiz.choices[3], (int) (game.screen_width *.07), (int) (game.screen_height * .85));
+       }
+    
+    
+    if(game.game_time <= 0){
+    	g.setColor(Color.GRAY);
+    	g.fillRect((int)(game.screen_width*.25), (int)(game.screen_height*.25), (int)(game.screen_width*.5), (int)(game.screen_height*.5));
+    	g.setColor(Color.BLACK);
+    	g.setFont(f1);
+    	g.drawString("The Storm Has Passed!", (int)(game.screen_width*.40),(int)(game.screen_height*.33));
+    	g.setFont(f4);
+    	g.drawString("New High Score", (int)(game.screen_width*.45),(int)(game.screen_height*.40));
+    	g.setFont(f3);
+    	g.drawString("Oil Count:  	                " + Integer.toString(game.player.player_score.oil_count) + " x 10  = " + Integer.toString(game.player.player_score.oil_count * 10), (int)(game.screen_width*.33), (int)(game.screen_height*.47));
+    	g.drawString("Fertilizer Count:		      " + Integer.toString(game.player.player_score.fertilizer_count) + " x 10  = " + Integer.toString(game.player.player_score.fertilizer_count * 10) , (int)(game.screen_width*.33), (int)(game.screen_height*.54));
+    	g.setFont(f4);
+    	g.drawString("Score Total " +Integer.toString(game.player.player_score.game_score), (int)(game.screen_width*.45), (int)(game.screen_height*.65));
+    	//game.input_handler.input();
+    }
+    
+
+    
+    
+  }
+  
+  
+  
+}

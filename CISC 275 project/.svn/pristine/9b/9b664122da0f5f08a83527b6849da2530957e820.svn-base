@@ -1,0 +1,58 @@
+package group2.game;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.Timer;
+
+
+public class Buffer extends RiverBankObjects{
+
+	Boolean currently_clicked;
+	Boolean is_clicked=false;
+	Boolean ready = true;
+	double width=.08;
+	double height=.12;
+	String text = "Buffer";
+	Position position = new Position((1.0/60), (11.0/30));
+	long time = 20*1000;
+	
+	//makes buffer disappear after 20 seconds
+	Timer timer;
+	
+	Buffer(){
+		this.ID="Buffer";
+		this.is_alive=false;
+		this.is_permanent=false;
+		this.timer= new Timer((int)time, new ActionListener(){ 
+			@Override
+			public void actionPerformed(ActionEvent evt){
+				timer.stop();
+				is_alive = false;
+				bank.can_place_object[(int)coordinates.x][(int)coordinates.y]=true;
+				bank.objects.remove(coordinates);
+				//System.out.println("removed buffer at " + coordinates.x+ coordinates.y);
+			}});
+	}
+	
+	
+
+	
+	public boolean checkIfInBuffer(double x, double y){
+		return x >= position.x && x <= position.x +width && y >= position.y && y <= position.y+ height;
+		
+	}
+	
+	public void deployBuffer(){
+		is_alive=true;
+		ready=false;
+		timer.start();
+		//System.out.println("buffer deployed at " + coordinates.x + coordinates.y);
+	}
+	
+	@Override
+	public Timer getTimer(){
+		return timer;
+	}
+
+
+}

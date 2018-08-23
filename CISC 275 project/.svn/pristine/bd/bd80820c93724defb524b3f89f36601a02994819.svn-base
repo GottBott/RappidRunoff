@@ -1,0 +1,44 @@
+package group2.game;
+import java.awt.Image;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import javax.imageio.ImageIO;
+
+// Ben Gotthold
+//4/3
+//this defines the class for the side menus they have a 
+// position and a height and width and a function to add a
+// bin
+
+
+public class Menu {
+
+	ArrayList<MenuObject> menu_objects;
+	
+	Position position;
+	Image bin_image;
+	
+	
+	
+	
+	public Menu(Position p,String image){
+		this.menu_objects = new ArrayList<MenuObject>();
+		this.position = p;
+		position.width = (1.0/11);
+		position.height = (1.0/2);
+		try {
+			bin_image = ImageIO.read(Menu.class.getResourceAsStream(image));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		addBin();
+
+	}
+
+	public void addBin(){
+		menu_objects = new ArrayList<MenuObject>();
+		menu_objects.add(new MenuObject(new Position(position.x + 1.0/5000,position.y*2.9)));
+	}
+	
+}

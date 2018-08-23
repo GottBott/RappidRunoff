@@ -1,0 +1,84 @@
+package group2.game;
+
+import java.awt.*;
+import java.awt.event.*;
+
+import javax.swing.*;
+
+	public class GUIInput extends JPanel implements ActionListener{
+	    JTextField textField;
+	    public static JFrame frame = new JFrame("High Score! Enter Name");
+	  
+	   
+	    
+	    RapidRunoffGame game;
+
+	    public GUIInput(RapidRunoffGame g) {
+	        super();
+	        this.game = g;
+
+	        textField = new JTextField(20);
+	        textField.addActionListener(this);
+
+
+	        //Add Components to this panel.
+	        GridBagConstraints c = new GridBagConstraints();
+	        c.gridwidth = GridBagConstraints.REMAINDER;
+
+	        c.fill = GridBagConstraints.HORIZONTAL;
+	        add(textField, c);
+
+	        c.fill = GridBagConstraints.BOTH;
+	        c.weightx = 1.0;
+	        c.weighty = 1.0;
+	      
+	        
+
+	    }
+
+	    public void actionPerformed(ActionEvent evt) {
+	    	
+	        String text = textField.getText();
+	      //  textArea.append(text + newline);
+	        ScoreData pd = new ScoreData(text, game.player.player_score.game_score, System.currentTimeMillis());
+	        game.player.player_data = pd;
+	        pd.addDataToList();
+
+	        frame.dispose();
+	       
+	        
+	    }
+
+	    /**
+	     * Create the GUI and show it.  For thread safety,
+	     * this method should be invoked from the
+	     * event dispatch thread.
+	     */
+	    public void createAndShowGUI() {
+	        //Create and set up the window.
+	        
+	        frame.setBackground(Color.GRAY);
+	        //frame.setLocation((int)(game.screen_width*.25),(int)(game.screen_height*.25));
+	        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+	        frame.setAlwaysOnTop(true);
+	        
+	        
+	        frame.setBounds((int)(game.screen_width*.55), (int)(game.screen_height*.4), (int)(game.screen_width*.5), (int)(game.screen_height*.5));
+	       
+
+	        //Add contents to the window.
+	        frame.add(this);
+
+	        //Display the window.
+	        frame.pack();
+	        frame.setAlwaysOnTop(true);
+	        frame.setVisible(true);
+	    }
+	    
+
+	    
+	    
+	}
+
+
+

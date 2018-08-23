@@ -1,0 +1,72 @@
+package group2.game;
+import java.util.ArrayList;
+
+
+public class ScoreData {
+	
+	String name;
+	double score;
+	String date;
+	int rank;
+	
+	//constructor that takes in a name a score and a datetime
+	// the datetime probably will not be of type double in future versions
+	ScoreData(String name, double score, String date){
+		this.name = name;
+		this.score = score;
+		this.date = date;
+	}
+	
+	// adds its self to the scorelist
+	public void addDataToList(){
+		HighScoreList.addScore(this);
+	}
+
+	// Joe - used when printing high scores in the game.
+	public String display() {
+		int space_length_1 = 15 - name.length() + (int)(.3* 15 - name.length());
+		String space1 ="";
+		for(int i = 0; i <space_length_1; i++){
+			space1 = space1 + " ";
+		}
+		int space_length_2 = 6-Double.toString(score).length();
+		String space2 =" ";
+		for(int i = 0; i <space_length_2; i++){
+			space2 = space2 + " ";
+		}
+		
+		return (rank + 1) + ". " + name + space1 + score + space2 + date;
+	}
+	
+	// override equals as to be able to use built in assrylist functions.
+	@Override
+	public boolean equals(Object other){
+		
+		if (this.toString().equals(other.toString())){
+		return true;
+		}
+		
+		return false;
+		
+	}
+	
+	public int getRank(){
+		ArrayList<ScoreData> d =HighScoreList.getScores();
+		if(d.contains(this)){
+			return	d.indexOf(this);
+		}
+		else{
+			addDataToList();
+			getRank();
+		}
+		return -1;
+	}
+	
+	//override toString so it is usefulll for equals
+	@Override
+	public String toString(){
+		return name + "," + String.valueOf(score) + "," + String.valueOf(date);
+		
+	}
+
+}

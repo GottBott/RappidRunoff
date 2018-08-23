@@ -1,0 +1,38 @@
+package group2.game;
+import java.awt.Color;
+import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
+/**
+ * Joe
+ * 4/2/13
+ */
+public class Fertilizer extends WaterObjects{
+
+	public Fertilizer(Position p, RapidRunoffGame g, int s) {
+		super(p, g,s);
+		this.color = Color.GREEN;
+		this.lower_bin_x = .918;
+		this.upper_bin_x = .999;
+		this.lower_bin_y = .50;
+		this.upper_bin_y = .625;
+		image = DrawGame.FertImage;
+		
+		
+
+	}
+	
+	public void update() {
+		super.update();
+		
+		if(position.getXPos() > 1.0){
+			is_alive = false;
+			remove(false);
+			game.player.player_score.incrementFertilizerLost();
+			System.out.println(game.player.player_score.fertilizer_lost + " Fertilizer lost so far.");
+		}
+	}
+}

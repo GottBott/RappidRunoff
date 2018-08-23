@@ -1,0 +1,39 @@
+package group2.game;
+
+import java.awt.Color;
+import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
+/**
+ * Joe 4/2/13
+ */
+public class Oil extends WaterObjects {
+
+	public Oil(Position p, RapidRunoffGame g) {
+		super(p, g);
+		this.color = Color.BLACK;
+		this.lower_bin_x = .001;
+		this.upper_bin_x = .092;
+		this.lower_bin_y = 0.50;
+		this.upper_bin_y = 0.625;
+		image = DrawGame.OilImage;
+
+
+	}
+
+	public void update() {
+		super.update();
+
+		if (position.getXPos() > 1.0) {
+			is_alive = false;
+			remove(false);
+			game.player.player_score.incrementOilLost();
+			System.out.println(game.player.player_score.oil_lost
+					+ " Oil lost so far.");
+		}
+	}
+
+}

@@ -1,0 +1,27 @@
+package group2.game;
+import javax.swing.Timer;
+
+
+
+public abstract class RiverBankObjects {
+	
+	Position position;
+	Position coordinates;
+	String ID;
+	boolean is_alive;
+	boolean is_permanent;
+	
+
+	public double getXCoordinate(){
+		return coordinates.x;
+	}
+	public double getYCorrdinate(){
+		return coordinates.y;
+	}
+	public abstract Timer getTimer();
+	
+	public String getID() {
+		return ID;
+	}
+
+}

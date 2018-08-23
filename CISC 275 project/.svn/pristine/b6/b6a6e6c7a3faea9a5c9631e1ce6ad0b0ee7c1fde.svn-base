@@ -1,0 +1,27 @@
+/**
+ * Stefan
+ * 4/2/13
+ */
+public class Position {
+	double x;
+	double y;
+	
+	Position(double x, double y) {
+		this.x = x;
+		this.y = y;
+	}
+	
+	public double getXPos(){
+		return x;
+	}
+	
+	public double getYPos(){
+		return y;
+	}
+	
+	public void setPosition(double x_new,double y_new){
+		x = x_new;
+		y = y_new;
+		
+	}
+}

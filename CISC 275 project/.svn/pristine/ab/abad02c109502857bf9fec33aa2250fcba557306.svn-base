@@ -1,0 +1,53 @@
+package group2.game;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.Timer;
+
+
+public class Erosion extends RiverBankObjects implements Runnable{
+
+	double width;
+	double height;
+	boolean visible = false;
+	boolean eroding=false;
+	long time = 10*1000;
+	
+	//makes erosion permanent after 10 seconds
+	Timer timer;
+
+Erosion(Position inputCoordinates, RiverBank inputBank, Position inputPosition){
+	this.coordinates = inputCoordinates;
+	this.is_permanent = false;
+	this.ID="Erosion";
+	this.bank = inputBank;
+	this.position = inputPosition;
+	if (inputBank.ID==0){
+		width = .1;
+		height = .12;
+	}
+	else if (inputBank.ID==1){
+		width = .09;
+		height = .12;
+	}
+	this.timer=new Timer((int)time, new ActionListener(){ 
+		public void actionPerformed(ActionEvent evt){
+			timer.stop();
+			is_permanent = true;
+			bank.permanent_erosion[(int)coordinates.x][(int)coordinates.y]=true;
+		}});
+}
+
+
+
+@Override
+public void run() {
+	timer.start();
+	}
+	
+
+public Timer getTimer(){
+	return timer;
+}
+
+}

@@ -1,0 +1,15 @@
+
+public abstract class RiverBankObjects {
+	
+	Position position;
+	Position coordinates;
+
+	Boolean is_permanent;
+	Boolean is_alive;
+	String ID;
+	
+
+	public abstract Boolean checkIfPermanent();
+	public abstract Boolean checkIfAlive();
+
+}

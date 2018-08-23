@@ -1,0 +1,143 @@
+package group2.game;
+/**
+ * Stefan
+ * 4/3/13
+ */
+import java.util.ArrayList;
+import java.util.Random;
+
+public class Map {
+	
+	RapidRunoffGame game;
+	Random rand = new Random();
+	int update_count = 0;
+	int updates_object = 0;
+	int updates_per_water_object = 150;
+	int items_removed = 0;
+	
+	double[] start_positions = {0.18, 0.49, 0.78};
+	
+	ArrayList<RiverBank> river_banks;
+	ArrayList<RunningWater> running_water;
+	ArrayList<WaterObjects> water_objects;
+	ArrayList<Menu> menus;
+	ArrayList<Buffer> buffers;
+	River river;
+	City city;
+	
+	ArrayList<PowerUp> power_ups;
+	
+	public Map(RapidRunoffGame g){
+		this.game = g;
+		water_objects = new ArrayList<WaterObjects>();
+		addRiverBanks();
+		addMenus();
+		addStreams();
+		addPowerUps();
+		addBuffers();
+		city = new City(game);
+	}
+	
+	/**
+	 * Mary
+	 * adds Buffers to map
+	 */
+	public void addBuffers(){
+		buffers=new ArrayList<Buffer>();
+		buffers.add(new Buffer());
+		buffers.add(new Buffer());
+		buffers.add(new Buffer());
+		buffers.add(new Buffer());
+		buffers.add(new Buffer());
+		buffers.add(new Buffer());
+		buffers.add(new Buffer());
+		buffers.add(new Buffer());
+	}
+	
+	public void addMenus(){
+		menus = new ArrayList<Menu>();
+		menus.add(new Menu(new Position(1.0/100,(1.0/6)),"Oil_Box.png"));
+		menus.add(new Menu(new Position(.899,(1.0/6)),"Fert_Box.png"));
+	}
+	
+	/**
+	
+	 * Mary
+	 * adds powerUps to maps, top rectangle is broom and bottom is funnel
+	 */
+	public void addPowerUps(){
+		power_ups = new ArrayList<PowerUp>();
+		power_ups.add(new Broom(new Position(.9, .22)));
+		power_ups.add(new Funnel(new Position(.0142, .22)));
+
+	}
+	
+	/**
+	 * Mason
+	 * add the three river banks to our map
+	 */
+	public void addRiverBanks(){
+		river_banks = new ArrayList<RiverBank>();
+		Position bank0 = new Position(.33, .66);
+		Position bank1 = new Position(.54, .68);
+		river_banks.add(new RiverBank(2, bank0, .12, .15, 0));
+		river_banks.add(new RiverBank(2, bank1, .10, .15, 1));
+	}
+	
+	public void addStreams(){
+		running_water = new ArrayList<RunningWater>();
+		running_water.add(new Stream(1));
+		running_water.add(new Stream(2));
+		running_water.add(new Stream(3));
+		
+		river = new River();
+		running_water.add(river);
+	}
+	
+	/**
+	 * Mary
+	 * added code to stop oil/fertilizer from being spawned if funnel/broom powerUp deployed
+	 */
+	public void update(){
+		update_count++;
+		updates_object++;
+		if(items_removed >= 10){
+			items_removed = 0;
+			power_ups.get(rand.nextInt(2)).ready = true;
+		}
+		if(updates_object >= updates_per_water_object){
+			updates_object = 0;
+			double shift[] = {															// shift amount to account for graphic
+					(rand.nextInt(2)==0)?(rand.nextDouble()/100):-(rand.nextDouble()/50), //stream 1
+					(rand.nextInt(2)==0)?(rand.nextDouble()/70):-(rand.nextDouble()/70), // stream 2
+					(rand.nextInt(2)==0)?(rand.nextDouble()/100):-(rand.nextDouble()/70)}; // stream 3
+			int streamnumber = rand.nextInt(3);
+			if(rand.nextInt(2) == 0){
+				if(!(power_ups.get(1)).deployed){
+					water_objects.add(new Oil(new Position(start_positions[streamnumber]+shift[streamnumber], 0.25), game,streamnumber));
+				}
+			}else{
+				if (!(power_ups.get(0)).deployed){
+					water_objects.add(new Fertilizer(new Position(start_positions[streamnumber]+shift[streamnumber], 0.25), game,streamnumber));
+				}
+			}
+		}
+		for(int i = 0; i < water_objects.size(); i++){
+			water_objects.get(i).update();
+		}
+		for (int i=0; i< river_banks.size(); i++){
+			river_banks.get(i).update();
+		}
+
+		city.update();
+		
+	}
+	
+	/**
+	 * Stefan
+	 * updates the speed at which objects are added to the game.
+	 */
+	public void updateSpeed(int t){
+		updates_per_water_object = (int)(60 / (-0.000003 * t + .9));
+	}
+}

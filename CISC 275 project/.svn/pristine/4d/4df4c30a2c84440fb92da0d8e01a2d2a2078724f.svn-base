@@ -1,0 +1,18 @@
+/**
+ * Mary
+ * 4/4/13
+ */
+public class Funnel extends PowerUp{
+	
+	Funnel(Position position){
+		super(position);
+		upper_x = 0.08;
+		upper_y = 0.334;
+		lower_x = .01;
+		lower_y = 0.24;
+		text = "FUNNEL";
+	}
+	/*Funnel(String text, Quiz quiz) {
+		super(text,quiz);
+	}*/
+}

@@ -1,0 +1,31 @@
+package group2.game;
+
+import java.awt.Font;
+import java.awt.Graphics;
+import javax.swing.JPanel;
+
+public class SplashScreen extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	RapidRunoffGame game;
+
+	public SplashScreen(RapidRunoffGame g) {
+		this.game = g;
+
+	}
+
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+
+		Font f1 = new Font("serif", Font.BOLD, (int) game.screen_height / 40
+				+ (int) game.screen_width / 40);
+
+		g.setFont(f1);
+		g.drawString("LOADING...", (int) (.35 * game.screen_width),
+				(int) (.5 * game.screen_height));
+
+	}
+
+}

@@ -1,0 +1,77 @@
+package group2.game;
+
+import java.awt.Color;
+
+public class StaticQuizes {
+	
+	
+	public static String[] choices0 = new String[] {
+			"The water becomes choked with algae and other plant material that kills off the fish",
+			"The fish eat too much of the resulting algae and get sick",
+			"It clogs the storm drain",
+			"The trees along the river become too big and block out the sun" };
+	public static Quiz quiz0 = new Quiz(
+			"What is the problem with fertilizer runoff entering rivers and lakes? ",
+			choices0, 0);
+
+	public static String[] choices1 = new String[] { "The fish become too slippery",
+			"The water can catch on fire", "The oil is poisonous to marine life in the water",
+			"There is not enogh oil left for cars" };
+	public static Quiz quiz1 = new Quiz(
+			"What is the problem with too much oil entering rivers and lakes? ",
+			choices1, 2);
+
+	public static String[] choices2 = new String[] {
+			"Roll the car onto the grass, so that the water running off the car will be absorbed",
+			"Put lots of towels down under the car",
+			"Roll onto the driveway, so that the water goes down into the storm drain",
+			"Cover the storm drain with a garbage bag" };
+	public static Quiz quiz2 = new Quiz(
+			"What can you do when washing the car that will help reduce run-off? ",
+			choices2, 0);
+
+	public static String[] choices3 = new String[] { "To the nearest sewage treatment plant",
+			"Deep underground", "Into the sinks and showers in your house",
+			"Right back into the closest body of water" };
+	public static Quiz quiz3 = new Quiz(
+			"Where does the water go after it goes down a storm drain? ",
+			choices3, 3);
+
+	public static String[] choices4 = new String[] {
+			"Fertilize your lawn with just enough fertilizer",
+			"Sweep up the fertilzer that gets on the driveway",
+			"Putting a garbage bag over the storm drain",
+			"Use fertilizers that minimize impact to the enviroment" };
+	public static Quiz quiz4 = new Quiz(
+			" Which of the following, ISN'T a correct way to reduce the amount of fertilizer runoff? ",
+			choices4, 2);
+	
+	public static String[] choices5 = new String[] {
+		"Fertilize your lawn with just enough fertilizer",
+		"Sweep up the fertilzer and throw it in the trash",
+		"Putting a garbage bag over the storm drain",
+		"Use the strongest fertilizer possible" };
+	public static Quiz quiz5 = new Quiz(
+		" Which of the following, IS the most correct way to reduce the amount of fertilizer runoff? ",
+		choices5, 0);
+	
+	public static String[] choices6 = new String[] {
+		"The river will get very small and will disappear",
+		"All of the trees will fall into the river",
+		"The river will slow down drastically",
+		"The river will speed up drastically" };
+	public static Quiz quiz6 = new Quiz(
+		" Which of the following is an effect of erosion on a river? ",
+		choices6, 3);
+	
+	public static String[] choices7 = new String[] {
+		"Duct-taping the river banks",
+		"By planting buffer plants, to anchor soil",
+		"Dam the river so that it won't flow",
+		"Put lots of rocks on the river banks" };
+	public static Quiz quiz7 = new Quiz(
+		" What is one responsible way we can prevent erosion in our local rivers? ",
+		choices7, 1);
+	
+
+}

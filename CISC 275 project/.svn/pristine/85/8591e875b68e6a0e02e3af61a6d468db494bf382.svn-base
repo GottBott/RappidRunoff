@@ -1,0 +1,46 @@
+package group2.game;
+import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
+
+public class City {
+	RapidRunoffGame game;
+	
+	public Image[] cities = new Image[5];
+	public Image no_city ;
+	public Image city;
+	
+	public City(RapidRunoffGame game) {
+		this.game = game;
+		
+		try {
+			no_city = ImageIO.read(City.class.getResourceAsStream("no_city_background.png"));
+			city = ImageIO.read(City.class.getResourceAsStream("city_background.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		cities[0] = no_city;
+		cities[1] = no_city;
+		cities[2] = no_city;
+		cities[3] = no_city;
+		cities[4] = no_city;
+	}
+	
+	public void update() {
+		if (game.game_time < 90000) {
+			cities[2] = city;
+		}
+		if (game.game_time < 60000) {
+			cities[1] = city;
+			cities[3] = city;
+		}
+		if (game.game_time < 30000) {
+			cities[0] = city;		
+			cities[4] = city;
+		}
+	}
+}

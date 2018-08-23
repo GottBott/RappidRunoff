@@ -1,0 +1,63 @@
+package group2.game;
+
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.Timer;
+
+/**
+ * Mary 4/4/13
+ */
+public abstract class PowerUp {
+
+	String text;
+	Quiz quiz;
+	long time = 10 * 1000;
+	boolean deployed = false;
+	boolean ready = false;
+	
+
+	Position position;
+
+	RapidRunoffGame game;
+	Image image;
+
+	Timer timer = new Timer((int) time, new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			deployed = false;
+			timer.stop();
+		}
+	});
+
+	PowerUp(Position position) {
+		this.position = position;
+		position.width = .07;
+		position.height = .13;
+	
+
+	}
+
+	/**
+	 * Mary checks if click is in range of powerUp
+	 */
+	public boolean checkIfInPowerUp(double x, double y) {
+		return x >= position.x && x <= position.x + position.width
+				&& y >= position.y && y <= position.y + position.height;
+	}
+
+	/**
+	 * Mary Keeps powerUp deployed for 10 seconds
+	 */
+	public void deployPowerUp() {
+		if (ready) {
+			DrawGame.first_powerup = true;
+			deployed = true;
+			ready = false;
+			timer.start();
+		
+
+		}
+	}
+}

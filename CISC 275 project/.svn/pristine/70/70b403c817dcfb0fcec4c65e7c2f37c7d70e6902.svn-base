@@ -1,0 +1,31 @@
+import java.awt.Color;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
+/**
+ * Joe
+ * 4/2/13
+ */
+public class Oil extends WaterObjects {
+	
+	public Oil(Position p, RapidRunoffGame g) {
+		super(p, g);
+		this.color = Color.BLACK;
+		this.lower_bin_x = .001;
+		this.upper_bin_x = .092;
+		this.lower_bin_y = 0.50;
+		this.upper_bin_y = 0.625;
+		
+		try {
+			image[0] = ImageIO.read(new File("oil1.png"));
+			image[1] = ImageIO.read(new File("oil2.png"));
+			image[2] = ImageIO.read(new File("oil3.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		cur_image = 0;
+	}
+	
+}
